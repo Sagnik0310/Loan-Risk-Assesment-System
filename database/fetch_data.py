@@ -1,7 +1,7 @@
 import pandas as pd
 
 from database.mongodb import MongoDBConnection
-from database.collections import Collections
+from database.db_collections import Collections
 
 
 class FetchData:
