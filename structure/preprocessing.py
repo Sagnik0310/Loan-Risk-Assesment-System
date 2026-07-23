@@ -1,4 +1,4 @@
-import os   #file hanling
+import os   #file handling
 import joblib
 
 from sklearn.preprocessing import LabelEncoder, StandardScaler
