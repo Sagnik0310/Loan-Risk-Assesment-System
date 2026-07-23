@@ -1,4 +1,4 @@
-import os
+import os   #file hanling
 import joblib
 
 from sklearn.preprocessing import LabelEncoder, StandardScaler
@@ -52,7 +52,7 @@ class DataPreprocessor:
         os.makedirs("models", exist_ok=True)
 
         # Save scaler and encoder
-        joblib.dump(self.scaler, "models/scaler.pkl") #joblib saves the cleaned data
+        joblib.dump(self.scaler, "models/scaler.pkl") #joblib saves the cleaned data 
 
         joblib.dump(self.encoder, "models/encoder.pkl")
 
