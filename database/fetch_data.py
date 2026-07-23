@@ -6,7 +6,7 @@ from database.collections import Collections
 
 class FetchData:
 
-    def init(self):
+    def __init__(self):
         self.mongo = MongoDBConnection()
 
     def get_dataframe(self):
@@ -39,16 +39,13 @@ class FetchData:
             self.mongo.close()
 
 
-if name == "main":
+if __name__ == "__main__":
 
     fetcher = FetchData()
 
     df = fetcher.get_dataframe()
 
     print(df.head())
-
     print("\nShape :", df.shape)
-
     print("\nColumns :")
-
     print(df.columns.tolist())
