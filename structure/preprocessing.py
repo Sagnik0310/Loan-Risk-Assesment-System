@@ -60,39 +60,3 @@ class DataPreprocessor:
 
         return X, y
     
-if __name__ == "__main__":
-
-    from database.fetch_data import FetchData
-    from structure.feature_engineering import FeatureEngineering
-
-    print("=" * 60)
-    print("Loading Dataset")
-    print("=" * 60)
-
-    fetcher = FetchData()
-    df = fetcher.get_dataframe()
-
-    print("Original Shape:", df.shape)
-
-    print("\nApplying Feature Engineering...")
-
-    fe = FeatureEngineering()
-    df = fe.create_features(df)
-
-    print("Shape after Feature Engineering:", df.shape)
-
-    print("\nApplying Preprocessing...")
-
-    preprocessor = DataPreprocessor()
-
-    X, y = preprocessor.preprocess(df)
-
-    print("\nPreprocessing Successful!")
-    print("X Shape :", X.shape)
-    print("y Shape :", y.shape)
-
-    print("\nFirst 5 rows of X:")
-    print(X.head())
-
-    print("\nFirst 5 values of y:")
-    print(y.head())
