@@ -1,5 +1,6 @@
 import os   #file handling
 import joblib
+import pandas as pd
 
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 
@@ -22,15 +23,14 @@ class DataPreprocessor:
         df = df.drop_duplicates()
 
         # Handle missing values
+
         for column in df.columns:
 
-            if df[column].dtype == "object":
-
-                df[column] = df[column].fillna(df[column].mode()[0])
+            if pd.api.types.is_numeric_dtype(df[column]):
+                df[column] = df[column].fillna(df[column].median())
 
             else:
-
-                df[column] = df[column].fillna(df[column].median())
+                df[column] = df[column].fillna(df[column].mode()[0])
 
         # Encode purpose column
         df["purpose"] = self.encoder.fit_transform(df["purpose"])
@@ -59,3 +59,40 @@ class DataPreprocessor:
         print("Preprocessing completed successfully.")
 
         return X, y
+    
+if __name__ == "__main__":
+
+    from database.fetch_data import FetchData
+    from structure.feature_engineering import FeatureEngineering
+
+    print("=" * 60)
+    print("Loading Dataset")
+    print("=" * 60)
+
+    fetcher = FetchData()
+    df = fetcher.get_dataframe()
+
+    print("Original Shape:", df.shape)
+
+    print("\nApplying Feature Engineering...")
+
+    fe = FeatureEngineering()
+    df = fe.create_features(df)
+
+    print("Shape after Feature Engineering:", df.shape)
+
+    print("\nApplying Preprocessing...")
+
+    preprocessor = DataPreprocessor()
+
+    X, y = preprocessor.preprocess(df)
+
+    print("\nPreprocessing Successful!")
+    print("X Shape :", X.shape)
+    print("y Shape :", y.shape)
+
+    print("\nFirst 5 rows of X:")
+    print(X.head())
+
+    print("\nFirst 5 values of y:")
+    print(y.head())

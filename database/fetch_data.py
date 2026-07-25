@@ -38,14 +38,3 @@ class FetchData:
         finally:
             self.mongo.close()
 
-
-if __name__ == "__main__":
-
-    fetcher = FetchData()
-
-    df = fetcher.get_dataframe()
-
-    print(df.head())
-    print("\nShape :", df.shape)
-    print("\nColumns :")
-    print(df.columns.tolist())
