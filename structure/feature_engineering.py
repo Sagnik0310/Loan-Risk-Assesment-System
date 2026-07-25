@@ -36,3 +36,18 @@ class FeatureEngineering:
         )
 
         return df
+if __name__ == "__main__":
+
+    from database.fetch_data import FetchData
+
+    fetcher = FetchData()
+
+    df = fetcher.fetch_data()
+
+    fe = FeatureEngineering()
+
+    df = fe.create_features(df)
+
+    print(df.head())
+
+    print(df.columns)
