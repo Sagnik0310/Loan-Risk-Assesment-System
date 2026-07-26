@@ -1,0 +1,8 @@
+Model,Best Score,Best Parameters
+Logistic Regression,0.0237,"{'C': np.float64(3.7554011884736247), 'solver': 'lbfgs'}"
+Support Vector Machine,0.0692,"{'C': np.float64(4.85357153204958), 'gamma': 'scale', 'kernel': 'rbf'}"
+K Nearest Neighbors,0.1171,"{'n_neighbors': 5, 'p': 1, 'weights': 'uniform'}"
+Decision Tree,0.1925,"{'criterion': 'entropy', 'max_depth': 14, 'min_samples_leaf': 6, 'min_samples_split': 3}"
+Random Forest,0.0175,"{'max_depth': 11, 'max_features': 'sqrt', 'min_samples_leaf': 2, 'min_samples_split': 4, 'n_estimators': 136}"
+Naive Bayes,0.2611,{'var_smoothing': np.float64(3.845401188473625e-09)}
+XGBoost,0.1371,"{'colsample_bytree': np.float64(0.8123620356542087), 'learning_rate': np.float64(0.20014286128198325), 'max_depth': 5, 'n_estimators': 121, 'subsample': np.float64(0.8795975452591109)}"
