@@ -5,4 +5,7 @@ load_dotenv()
 
 
 class Collections:
+
     LOAN_DATA = os.getenv("COLLECTION_NAME")
+
+    PREDICTION_HISTORY = "loan_prediction_history"

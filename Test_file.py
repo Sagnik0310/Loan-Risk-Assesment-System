@@ -1,52 +1,82 @@
-from database.fetch_data import FetchData
-from structure.preprocessing import DataPreprocessor
-from structure.train_models import TrainModels
-from structure.hyperparameter_tuning import HyperparameterTuning
+from structure.prediction import LoanPrediction
+from database.prediction_history import PredictionHistory
 
-from sklearn.model_selection import train_test_split
+predictor = LoanPrediction()
+history = PredictionHistory()
 
+print("=" * 60)
+print("LOAN RISK PREDICTION")
+print("=" * 60)
 
-def main():
+# ---------------- Applicant Details ----------------
 
-    # Fetch Dataset
-    fetcher = FetchData()
-    df = fetcher.get_dataframe()
+applicant = {
 
-    # Preprocess Dataset
-    preprocessor = DataPreprocessor()
-    X, y = preprocessor.preprocess(df)
+    "name": input("Applicant Name : ").strip(),
 
-    print("=" * 70)
-    print("Splitting Dataset")
-    print("=" * 70)
+    "address": input("Address        : ").strip(),
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        X,
-        y,
-        test_size=0.2,
-        random_state=42,
-        stratify=y
-    )
+    "phone": input("Mobile Number  : ").strip(),
 
-    # Train Base Models
-    trainer = TrainModels()
-    trainer.train_models(X_train, y_train)
+    "email": input("Email          : ").strip()
 
-    # Hyperparameter Tuning
-    tuner = HyperparameterTuning()
+}
 
-    tuned_models, results = tuner.tune_models(
-        X_train,
-        y_train
-    )
+# ---------------- Loan Details ----------------
 
-    print("\n")
-    print("=" * 70)
-    print("Final Results")
-    print("=" * 70)
+loan_data = {
 
-    print(results)
+    "credit.policy": int(input("Credit Policy (1/0): ")),
 
+    "purpose": input("Purpose: ").strip(),
 
-if __name__ == "__main__":
-    main()
+    "int.rate": float(input("Interest Rate: ")),
+
+    "installment": float(input("Installment: ")),
+
+    "log.annual.inc": float(input("Log Annual Income: ")),
+
+    "dti": float(input("Debt-To-Income Ratio: ")),
+
+    "fico": int(input("FICO Score: ")),
+
+    "days.with.cr.line": float(input("Days with Credit Line: ")),
+
+    "revol.bal": float(input("Revolving Balance: ")),
+
+    "revol.util": float(input("Revolving Utilization: ")),
+
+    "inq.last.6mths": int(input("Inquiries Last 6 Months: ")),
+
+    "delinq.2yrs": int(input("Delinquencies Last 2 Years: ")),
+
+    "pub.rec": int(input("Public Records: "))
+
+}
+
+# ---------------- Prediction ----------------
+
+result = predictor.predict(loan_data)
+
+print("\n" + "=" * 60)
+print("PREDICTION RESULT")
+print("=" * 60)
+
+risk = "HIGH RISK" if result["Prediction"] == 1 else "LOW RISK"
+
+print(f"Prediction : {risk}")
+print(f"Probability: {result['Probability']:.2%}")
+
+# ---------------- Save ----------------
+
+history.save_prediction(
+
+    applicant,
+
+    loan_data,
+
+    result
+
+)
+
+print("\nApplication saved successfully into MongoDB.")
