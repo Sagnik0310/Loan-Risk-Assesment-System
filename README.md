@@ -487,7 +487,7 @@ The application includes:
 The frontend of the application is developed using:
 
 - Streamlit
-- Custom CSS (`style.css`)
+- Custom CSS 
 
 The CSS file enhances the overall appearance of the application by improving:
 
