@@ -186,11 +186,4 @@ class TrainModels:
         )
 
 
-if __name__ == "__main__":
-
-    print(
-        "Import this class into pipeline.py"
-    )
-
-
 
