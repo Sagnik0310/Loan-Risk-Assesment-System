@@ -91,39 +91,47 @@ The final prediction assists financial institutions in making informed lending d
 # 📂 Project Structure
 
 ```
-Loan-Risk-Assessment-System/
+## 📂 Project Structure
 
+```text
+Loan-Risk-Assessment-System/
+│
+├── __pycache__/
+│   └── Test_file.cpython-314.pyc
+│
+├── .streamlit/
+│   └── config.toml
 │
 ├── database/
-│   ├── mongodb.py
+│   ├── __pycache__/
+│   ├── db_collections.py
 │   ├── fetch_data.py
-│   └── db_collections.py
+│   ├── mongodb.py
+│   └── prediction_history.py
 │
 ├── models/
-│   ├── logistic.pkl
-│   ├── svm.pkl
-│   ├── decision_tree.pkl
-│   ├── random_forest.pkl
-│   ├── knn.pkl
-│   ├── naive_bayes.pkl
-│   ├── xgboost.pkl
-│   ├── stacking_model.pkl
-│   ├── scaler.pkl
-│   └── encoder.pkl
 │
-├── src/
-│   ├── preprocessing.py
-│   ├── feature_engineering.py
-│   ├── train_models.py
-│   ├── hyperparameter_tuning.py
-│   ├── ensemble.py
+├── reports/
+│
+├── structure/
+│   ├── __pycache__/
 │   ├── evaluation.py
-│   └── prediction.py
+│   ├── feature_engineering.py
+│   ├── hyperparameter_tuning.py
+│   ├── pipeline.py
+│   ├── prediction.py
+│   ├── preprocessing.py
+│   ├── stacking_classifier.py
+│   └── train_models.py
 │
+├── .gitattributes
+├── .gitignore
 ├── app.py
-├── style.css
+├── README.md
 ├── requirements.txt
-└── README.md
+├── Test_file.py
+└── test_search.py
+```
 ```
 
 ---
