@@ -3,6 +3,9 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 
+from structure.prediction import LoanPrediction
+from database.prediction_history import PredictionHistory
+
 st.set_page_config(
     page_title="LoanPredict - AI Risk Analysis",
     page_icon="🛡️",
@@ -10,11 +13,12 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
+predictor = LoanPrediction()
+history = PredictionHistory()
+
 # ── Session state defaults ─────────────────────────────────────────────────
 if "page" not in st.session_state:
     st.session_state.page = "new_prediction"
-if "history" not in st.session_state:
-    st.session_state.history = []
 if "dark_mode" not in st.session_state:
     st.session_state.dark_mode = True
 if "welcome_shown" not in st.session_state:
@@ -152,6 +156,50 @@ header {{ visibility: hidden; }}
 }}
 .user-name {{ color: {T['text']}; font-size: 0.85rem; font-weight: 500; }}
 
+/* ── Nav tab row (real page-switch buttons, docked under the brand bar) ── */
+.st-key-navbar_buttons {{
+    background-color: {T['navbar_bg']};
+    border-bottom: 1px solid {T['navbar_border']};
+    margin: 0 -4rem 2rem -4rem;
+    padding: 0.5rem 2rem 0.6rem;
+    position: sticky;
+    top: 64px;
+    z-index: 998;
+}}
+.st-key-navbar_buttons [data-testid="stHorizontalBlock"] {{
+    gap: 0.25rem;
+    max-width: 620px;
+}}
+.st-key-navbar_buttons .stButton {{ margin: 0 !important; }}
+.st-key-navbar_buttons .stButton > button {{
+    background: transparent !important;
+    color: {T['subtext']} !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 8px !important;
+    height: auto !important;
+    width: auto !important;
+    padding: 0.5rem 1.1rem !important;
+    font-size: 0.88rem !important;
+    font-weight: 500 !important;
+    letter-spacing: normal !important;
+    transform: none !important;
+}}
+.st-key-navbar_buttons .stButton > button:hover {{
+    background: {T['card_border']} !important;
+    color: {T['text']} !important;
+    transform: none !important;
+    box-shadow: none !important;
+}}
+.st-key-navbar_buttons .stButton > button[kind="primary"] {{
+    background: #4361ee !important;
+    color: #ffffff !important;
+}}
+.st-key-navbar_buttons .stButton > button[kind="primary"]:hover {{
+    background: linear-gradient(90deg, #3451d1, #2a46c4) !important;
+    color: #ffffff !important;
+}}
+
 /* ── Page header ── */
 .page-header {{
     text-align: center; padding: 2.5rem 0 2rem;
@@ -276,11 +324,7 @@ st.markdown(f"""
             <div class="sub">AI Risk Analysis</div>
         </div>
     </div>
-    <div class="navbar-links">
-        <span class="nav-link {'active' if active=='new_prediction' else ''}">📄 New Prediction</span>
-        <span class="nav-link {'active' if active=='history' else ''}">🕐 Application History</span>
-        <span class="nav-link {'active' if active=='analytics' else ''}">📊 Analytics Dashboard</span>
-    </div>
+    <div class="navbar-links"></div>
     <div class="nav-user">
         <div class="avatar">CA</div>
         <span class="user-name">Credit Analyst</span>
@@ -288,35 +332,38 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# ── Invisible nav buttons + visible theme toggle ───────────────────────────
-c_new, c_hist, c_ana, c_gap, c_theme = st.columns([1.1, 1.3, 1.1, 3.5, 1])
-with c_new:
-    if st.button("New Prediction", key="btn_new", use_container_width=True):
-        st.session_state.page = "new_prediction"; st.rerun()
-with c_hist:
-    if st.button("App History", key="btn_hist", use_container_width=True):
-        st.session_state.page = "history"; st.rerun()
-with c_ana:
-    if st.button("Analytics", key="btn_ana", use_container_width=True):
-        st.session_state.page = "analytics"; st.rerun()
-with c_theme:
-    label = "☀️ Light" if st.session_state.dark_mode else "🌙 Dark"
-    if st.button(label, key="theme_toggle"):
-        st.session_state.dark_mode = not st.session_state.dark_mode
-        st.rerun()
+# Nav buttons are wrapped in a keyed container so the CSS above (.st-key-navbar_buttons)
+# can dock them visually to the brand bar and restyle them as nav pills, without
+# affecting any other button (Run Prediction, Get Started, etc.) on the page.
+with st.container(key="navbar_buttons"):
+    col1, col2, col3 = st.columns([3, 3, 3])
 
-# Hide the first 3 nav buttons (they're invisible click targets behind the navbar HTML)
-st.markdown("""
-<style>
-[data-testid="stHorizontalBlock"]:nth-of-type(1) > div:nth-child(1) button,
-[data-testid="stHorizontalBlock"]:nth-of-type(1) > div:nth-child(2) button,
-[data-testid="stHorizontalBlock"]:nth-of-type(1) > div:nth-child(3) button {
-    opacity: 0 !important; height: 1px !important; padding: 0 !important;
-    margin: 0 !important; min-height: 0 !important;
-    pointer-events: auto !important; position: absolute !important;
-}
-</style>
-""", unsafe_allow_html=True)
+    with col1:
+        if st.button(
+            "📄 New Prediction",
+            use_container_width=True,
+            type="primary" if st.session_state.page == "new_prediction" else "secondary",
+        ):
+            st.session_state.page = "new_prediction"
+            st.rerun()
+
+    with col2:
+        if st.button(
+            "🕐 Application History",
+            use_container_width=True,
+            type="primary" if st.session_state.page == "history" else "secondary",
+        ):
+            st.session_state.page = "history"
+            st.rerun()
+
+    with col3:
+        if st.button(
+            "📊 Analytics Dashboard",
+            use_container_width=True,
+            type="primary" if st.session_state.page == "analytics" else "secondary",
+        ):
+            st.session_state.page = "analytics"
+            st.rerun()
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -393,61 +440,77 @@ if st.session_state.page == "new_prediction":
     run_clicked = st.button("Run Prediction Model  →", key="run_btn")
 
     if run_clicked:
-        score  = 0
-        score += (fico - 300) / 550 * 40
-        score += max(0, (1 - dti / 100)) * 20
-        score += max(0, (1 - int_rate)) * 15
-        score += max(0, (1 - rev_util / 100)) * 10
-        score += max(0, (5 - inq_6m) / 5) * 10
-        score += max(0, (1 - delinq / 10)) * 5
-        score += (1 if "1" in credit_policy else 0) * 5
-        score  = round(min(score, 99.9), 1)
-        approved = score >= 55
+        applicant = {
+            "name": full_name,
+            "address": address,
+            "phone": phone,
+            "email": email
+        }
 
-        st.session_state.history.insert(0, {
-            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M"),
-            "name": full_name or "Anonymous",
-            "email": email or "—",
-            "phone": phone or "—",
-            "purpose": purpose,
-            "credit_policy": credit_policy,
-            "int_rate": int_rate,
+        loan_data = {
+            "credit.policy": 1 if "1" in credit_policy else 0,
+            "purpose": purpose.lower().replace(" ", "_"),
+            "int.rate": int_rate,
             "installment": installment,
-            "log_income": log_income,
+            "log.annual.inc": log_income,
             "dti": dti,
             "fico": fico,
-            "days_cr": days_cr,
-            "rev_bal": rev_bal,
-            "rev_util": rev_util,
-            "inq_6m": inq_6m,
-            "delinq": delinq,
-            "pub_rec": pub_rec,
-            "not_paid": not_paid,
-            "score": score,
-            "result": "Approved" if approved else "Denied",
-        })
+            "days.with.cr.line": days_cr,
+            "revol.bal": rev_bal,
+            "revol.util": rev_util,
+            "inq.last.6mths": inq_6m,
+            "delinq.2yrs": delinq,
+            "pub.rec": pub_rec
+        }
+
+        result = predictor.predict(loan_data)
+
+        history.save_prediction(
+            applicant,
+            loan_data,
+            result
+        )
+
+        prediction = result["Prediction"]
+        probability = result["Probability"] * 100
+
+        approved = prediction == 0
 
         st.markdown("---")
         if approved:
-            st.markdown(f"""<div class="result-approved">
+            st.markdown(f"""
+            <div class="result-approved">
                 <div class="result-icon">✅</div>
-                <div class="result-title">Loan Approved</div>
-                <div class="result-prob">Approval Probability: <strong>{score}%</strong></div>
-            </div>""", unsafe_allow_html=True)
+                <div class="result-title">Low Risk</div>
+                <div class="result-prob">
+                    Probability: <strong>{probability:.2f}%</strong>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
         else:
-            st.markdown(f"""<div class="result-denied">
-                <div class="result-icon">❌</div>
-                <div class="result-title">Loan Denied</div>
-                <div class="result-prob">Approval Probability: <strong>{score}%</strong></div>
-            </div>""", unsafe_allow_html=True)
+            st.markdown(f"""
+                <div class="result-denied">
+                    <div class="result-icon">❌</div>
+                    <div class="result-title">High Risk</div>
+                    <div class="result-prob">
+                        Probability: <strong>{probability:.2f}%</strong>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
         c1, c2, c3, c4 = st.columns(4)
         for col, val, lbl, color in [
-            (c1, fico,            "FICO Score",    "#4361ee"),
-            (c2, f"{dti}%",       "DTI Ratio",     "#4361ee"),
-            (c3, f"{int_rate:.1%}","Interest Rate", "#4361ee"),
-            (c4, f"{score}%",     "Approval Score","#10b981" if approved else "#ef4444"),
+            (c1, fico, "FICO Score", "#4361ee"),
+            (c2, f"{dti:.1f}%", "DTI Ratio", "#4361ee"),
+            (c3, f"{int_rate:.3f}", "Interest Rate", "#4361ee"),
+            (
+                c4,
+                f"{probability:.2f}%",
+                "Prediction Probability",
+                "#10b981" if approved else "#ef4444",
+            ),
         ]:
             with col:
                 st.markdown(f'<div class="metric-card"><div class="metric-val" style="color:{color}">{val}</div><div class="metric-lbl">{lbl}</div></div>', unsafe_allow_html=True)
@@ -465,7 +528,9 @@ elif st.session_state.page == "history":
     </div>
     """, unsafe_allow_html=True)
 
-    if not st.session_state.history:
+    records = history.get_history()
+
+    if not records:
         st.markdown(f"""
         <div class="card" style="text-align:center; padding:3rem;">
             <div style="font-size:3rem;">📋</div>
@@ -474,19 +539,30 @@ elif st.session_state.page == "history":
             </div>
         </div>""", unsafe_allow_html=True)
     else:
-        df = pd.DataFrame(st.session_state.history)
+        df = pd.DataFrame(records)
+        df["result"] = df["prediction"].map({
+            0: "Approved",
+            1: "Denied"
+        })
         df["result_display"] = df["result"].apply(lambda r: f"✅ {r}" if r == "Approved" else f"❌ {r}")
         display_cols = {
-            "timestamp":"Date","name":"Applicant","email":"Email",
-            "phone":"Phone","purpose":"Purpose","fico":"FICO",
-            "dti":"DTI %","int_rate":"Rate","score":"Score %","result_display":"Result"
+            "timestamp": "Date",
+            "name": "Applicant",
+            "email": "Email",
+            "phone": "Phone",
+            "purpose": "Purpose",
+            "fico": "FICO",
+            "dti": "DTI %",
+            "int.rate": "Rate",
+            "probability": "Probability",
+            "result_display": "Result"
         }
         st.dataframe(
             df[[c for c in display_cols if c in df.columns]].rename(columns=display_cols),
             use_container_width=True, hide_index=True,
         )
-        approved_count = sum(1 for r in st.session_state.history if r["result"] == "Approved")
-        total = len(st.session_state.history)
+        approved_count = len(df[df["prediction"] == 0])
+        total = len(df)
         c1, c2, c3 = st.columns(3)
         for col, val, lbl, color in [
             (c1, total,          "Total Applications", "#4361ee"),
@@ -509,7 +585,9 @@ elif st.session_state.page == "analytics":
     </div>
     """, unsafe_allow_html=True)
 
-    if not st.session_state.history:
+    records = history.get_history()
+
+    if not records:
         st.markdown(f"""
         <div class="card" style="text-align:center; padding:3rem;">
             <div style="font-size:3rem;">📊</div>
@@ -518,10 +596,23 @@ elif st.session_state.page == "analytics":
             </div>
         </div>""", unsafe_allow_html=True)
     else:
-        df    = pd.DataFrame(st.session_state.history)
+        df = pd.DataFrame(records)
+        df["result"] = df["prediction"].map({
+            0: "Approved",
+            1: "Denied"
+        })
+
+        df["int_rate"] = df["int.rate"]
+        df["log_income"] = df["log.annual.inc"]
+        df["days_cr"] = df["days.with.cr.line"]
+        df["rev_bal"] = df["revol.bal"]
+        df["rev_util"] = df["revol.util"]
+        df["inq_6m"] = df["inq.last.6mths"]
+        df["delinq"] = df["delinq.2yrs"]
+        df["pub_rec"] = df["pub.rec"]
         total = len(df)
-        approved  = len(df[df["result"] == "Approved"])
-        denied    = total - approved
+        approved = len(df[df["prediction"] == 0])
+        denied = len(df[df["prediction"] == 1])
 
         # KPI row
         c1,c2,c3,c4,c5 = st.columns(5)
@@ -530,7 +621,7 @@ elif st.session_state.page == "analytics":
             (approved, "Approved",         "#10b981"),
             (denied,   "Denied",           "#ef4444"),
             (f"{approved/total*100:.1f}%","Approval Rate","#4361ee"),
-            (f"{df['score'].mean():.1f}%","Avg Risk Score","#4361ee"),
+            (f"{df['probability'].mean()*100:.2f}%","Avg Risk Score","#4361ee"),
         ]):
             with col:
                 st.markdown(f'<div class="metric-card"><div class="metric-val" style="color:{clr}">{val}</div><div class="metric-lbl">{lbl}</div></div>', unsafe_allow_html=True)
@@ -576,10 +667,9 @@ elif st.session_state.page == "analytics":
         # Credit risk indicators
         st.markdown('<div class="card"><div class="card-title">⚠️ Credit Risk Indicators</div>', unsafe_allow_html=True)
         risk_rows = [
-            ("High Inquiries (≥3 in 6m)",  int((df["inq_6m"]>=3).sum())),
-            ("Delinquencies (2y)",          int((df["delinq"]>0).sum())),
-            ("Public Records",              int((df["pub_rec"]>0).sum())),
-            ("Previously Not Fully Paid",   int((df["not_paid"]=="Yes (1)").sum())),
+            ("High Inquiries (≥3 in 6m)", int((df["inq_6m"] >= 3).sum())),
+            ("Delinquencies (2y)", int((df["delinq"] > 0).sum())),
+            ("Public Records", int((df["pub_rec"] > 0).sum())),
         ]
         st.markdown(f"""
         <div class="analytics-table"><table>
@@ -592,7 +682,7 @@ elif st.session_state.page == "analytics":
         st.markdown('<div class="card"><div class="card-title">🕐 Recent Applications (Last 10)</div>', unsafe_allow_html=True)
         rec_rows = "".join(
             f"<tr><td>{r['timestamp']}</td><td>{r['name']}</td><td>{r['purpose']}</td>"
-            f"<td>{r['fico']}</td><td>{r['score']}%</td>"
+            f"<td>{r['fico']}</td><td>{r['probability']*100:.2f}%</td>"
             f"<td style='color:{'#10b981' if r['result']=='Approved' else '#ef4444'};font-weight:600'>"
             f"{'✅' if r['result']=='Approved' else '❌'} {r['result']}</td></tr>"
             for _,r in df.head(10).iterrows()
