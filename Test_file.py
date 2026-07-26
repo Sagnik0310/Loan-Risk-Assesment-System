@@ -1,52 +1,34 @@
-from database.fetch_data import FetchData
-from structure.preprocessing import DataPreprocessor
-from structure.train_models import TrainModels
-from structure.hyperparameter_tuning import HyperparameterTuning
+from structure.prediction import LoanPrediction
 
-from sklearn.model_selection import train_test_split
+predictor = LoanPrediction()
 
+print("=" * 60)
+print("LOAN RISK PREDICTION")
+print("=" * 60)
 
-def main():
+data = {
+    "credit.policy": int(input("Credit Policy (1/0): ")),
+    "purpose": input("Purpose: "),
+    "int.rate": float(input("Interest Rate: ")),
+    "installment": float(input("Installment: ")),
+    "log.annual.inc": float(input("Log Annual Income: ")),
+    "dti": float(input("Debt to Income Ratio: ")),
+    "fico": int(input("FICO Score: ")),
+    "days.with.cr.line": float(input("Days with Credit Line: ")),
+    "revol.bal": float(input("Revolving Balance: ")),
+    "revol.util": float(input("Revolving Utilization (%): ")),
+    "inq.last.6mths": int(input("Inquiries in Last 6 Months: ")),
+    "delinq.2yrs": int(input("Delinquencies in Last 2 Years: ")),
+    "pub.rec": int(input("Public Records: "))
+}
 
-    # Fetch Dataset
-    fetcher = FetchData()
-    df = fetcher.get_dataframe()
+result = predictor.predict(data)
 
-    # Preprocess Dataset
-    preprocessor = DataPreprocessor()
-    X, y = preprocessor.preprocess(df)
+print("\n========== RESULT ==========")
 
-    print("=" * 70)
-    print("Splitting Dataset")
-    print("=" * 70)
+if result["Prediction"] == 1:
+    print("Prediction : Loan will NOT be fully paid (High Risk)")
+else:
+    print("Prediction : Loan is likely to be fully paid (Low Risk)")
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        X,
-        y,
-        test_size=0.2,
-        random_state=42,
-        stratify=y
-    )
-
-    # Train Base Models
-    trainer = TrainModels()
-    trainer.train_models(X_train, y_train)
-
-    # Hyperparameter Tuning
-    tuner = HyperparameterTuning()
-
-    tuned_models, results = tuner.tune_models(
-        X_train,
-        y_train
-    )
-
-    print("\n")
-    print("=" * 70)
-    print("Final Results")
-    print("=" * 70)
-
-    print(results)
-
-
-if __name__ == "__main__":
-    main()
+print(f"Probability of Default : {result['Probability']:.2%}")

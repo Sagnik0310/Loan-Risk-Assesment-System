@@ -60,7 +60,7 @@ class HyperparameterTuning:
 
             SVC(
                 random_state=42,
-                probability=False
+                probability=True
             ),
 
             {

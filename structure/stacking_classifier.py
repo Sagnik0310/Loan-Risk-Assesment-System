@@ -1,3 +1,12 @@
+"""
+stacking_classifier.py
+
+Purpose
+-------
+Create a stacking ensemble using all tuned base models
+and save the final stacking classifier.
+"""
+
 import os
 import joblib
 
@@ -14,6 +23,10 @@ class StackingEnsemble:
         self.stacking_model = None
 
     def load_base_models(self):
+
+        print("=" * 70)
+        print("Loading Tuned Models")
+        print("=" * 70)
 
         model_files = {
 
@@ -35,7 +48,12 @@ class StackingEnsemble:
 
         for name, path in model_files.items():
 
+            if not os.path.exists(path):
+                raise FileNotFoundError(f"{path} not found.")
+
             self.base_models[name] = joblib.load(path)
+
+            print(f"{name.upper()} Loaded Successfully")
 
     def build_model(self):
 
@@ -79,7 +97,15 @@ class StackingEnsemble:
 
         )
 
+        print("\nStacking Classifier Created Successfully")
+
     def train(self, X_train, y_train):
+
+        if self.stacking_model is None:
+
+            self.build_model()
+
+        print("\nTraining Stacking Classifier...")
 
         self.stacking_model.fit(
 
@@ -88,6 +114,8 @@ class StackingEnsemble:
             y_train
 
         )
+
+        print("Stacking Classifier Trained Successfully")
 
     def save_model(self):
 
@@ -106,6 +134,34 @@ class StackingEnsemble:
             "models/stacking_classifier.pkl"
 
         )
+
+        print("Stacking Classifier Saved Successfully")
+
+    def load_model(self):
+
+        self.stacking_model = joblib.load(
+
+            "models/stacking_classifier.pkl"
+
+        )
+
+        print("Stacking Classifier Loaded Successfully")
+
+    def predict(self, X):
+
+        if self.stacking_model is None:
+
+            raise Exception("Train or load the stacking model first.")
+
+        return self.stacking_model.predict(X)
+
+    def predict_proba(self, X):
+
+        if self.stacking_model is None:
+
+            raise Exception("Train or load the stacking model first.")
+
+        return self.stacking_model.predict_proba(X)
 
     def get_model(self):
 
