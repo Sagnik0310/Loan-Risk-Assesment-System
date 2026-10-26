@@ -1,120 +1,99 @@
-# 💳 Loan Risk Assessment System
-### Intelligent Loan Approval Prediction using Ensemble Learning and Stacking Classifier
+# 💳 LoanPredict — Enterprise Loan Risk Assessment System
+### Intelligent Credit Risk Analysis using Ensemble Learning & Stacking Classifier
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.14-blue?style=for-the-badge&logo=python">
   <img src="https://img.shields.io/badge/Scikit--Learn-Machine%20Learning-orange?style=for-the-badge&logo=scikit-learn">
   <img src="https://img.shields.io/badge/XGBoost-Ensemble-green?style=for-the-badge">
   <img src="https://img.shields.io/badge/MongoDB-Database-darkgreen?style=for-the-badge&logo=mongodb">
-  <img src="https://img.shields.io/badge/Streamlit-Web%20Application-red?style=for-the-badge&logo=streamlit">
-  <img src="https://img.shields.io/badge/CSS-Frontend-blue?style=for-the-badge&logo=css3">
+  <img src="https://img.shields.io/badge/Streamlit-Fintech%20Dashboard-red?style=for-the-badge&logo=streamlit">
+  <img src="https://img.shields.io/badge/Plotly-Interactive%20Analytics-3F4F75?style=for-the-badge&logo=plotly">
 </p>
 
 ---
 
-# 📖 Project Overview
+## 📖 Project Overview
 
-Financial institutions receive thousands of loan applications every day. Approving loans without evaluating an applicant's financial profile can lead to a significant increase in loan defaults, whereas rejecting genuine applicants can result in missed business opportunities.
+Financial institutions evaluate thousands of loan applications daily. Approving high-risk loans without rigorous quantitative analysis increases default exposure, while rejecting creditworthy applicants results in lost lending opportunities.
 
-The **Loan Risk Assessment System** is an end-to-end Machine Learning application that predicts whether a loan application should be approved or rejected by analyzing multiple financial and personal attributes of the applicant.
+**LoanPredict (Loan Risk Assessment System)** is an end-to-end Machine Learning credit underwriting application that estimates whether a loan application represents a **Low Risk (`Class 0`)** or **High Risk (`Class 1`, `not.fully.paid = 1`)** profile by analyzing 13 financial, underwriting, and credit-bureau attributes.
 
-Instead of relying on a single machine learning algorithm, this project adopts an **Ensemble Learning** approach where several classification algorithms are trained independently. Their predictions are then combined using a **Stacking Classifier**, allowing the system to make more accurate, reliable, and generalized predictions.
-
-The project also integrates **MongoDB** for efficient data storage, uses **Scikit-Learn** and **XGBoost** for model development, and is deployed through an interactive **Streamlit** web application enhanced with custom **CSS** styling.
+Instead of relying on a single classifier, LoanPredict employs a two-level **Stacking Ensemble** (`StackingClassifier`) combining seven independently tuned supervised learning algorithms with a **Logistic Regression** meta-learner. The platform integrates **MongoDB** for persistent application history and audit logging, and features a modern, institutional **Streamlit + Plotly** fintech interface.
 
 ---
 
-# 🎯 Problem Statement
+## ✨ Key Features
 
-Banks and financial organizations need an intelligent system capable of determining whether a customer is likely to repay a loan based on historical data.
-
-The objective of this project is to build a machine learning model capable of predicting loan approval by considering various applicant characteristics such as income, employment details, credit history, loan amount, education, marital status, existing debts, and several other financial indicators.
-
-The final prediction assists financial institutions in making informed lending decisions while minimizing the overall credit risk.
-
----
-
-# ✨ Features
-
-- Complete End-to-End Machine Learning Pipeline
-- MongoDB Database Integration
-- Automated Data Preprocessing
-- Feature Engineering
-- Hyperparameter Tuning
-- Training of Multiple Machine Learning Models
-- Ensemble Learning using Stacking Classifier
-- Model Performance Evaluation
-- Interactive Streamlit Web Application
-- Responsive Frontend with Custom CSS
-- Real-Time Loan Prediction
+- **End-to-End Machine Learning Pipeline**: Automated preprocessing (`StandardScaler`, `LabelEncoder`), base model training, `RandomizedSearchCV` hyperparameter tuning, and ensemble stacking.
+- **5-Module Institutional Fintech UI**:
+  1. **Overview Dashboard**: Real-time portfolio KPIs, risk distribution donut chart, loan-purpose stacked breakdown, financial attribute summaries, and recent assessment activity with privacy-masked contact fields.
+  2. **New Loan Assessment**: Guided 4-stage underwriting workstation (Applicant Profile, Loan Structure & Policy, Income & Debt Capacity, Credit Bureau Indicators), sample profile presets, duplicate-submission protection, and an interactive Plotly risk probability gauge.
+  3. **Application History**: Multi-criteria filtering (text search, risk category, loan purpose, date range), dynamic sorting, pagination, CSV export, PII masking toggle, exact backend MongoDB lookup (`Name + Email + Phone`), full application inspector, and confirmation-guarded record deletion.
+  4. **Analytics Dashboard**: Interactive Plotly visualizations (assessment volume over time, FICO box distributions by risk class, interest rate vs. default probability scatter plot, purpose breakdown) alongside portfolio financial statistics and credit risk flags.
+  5. **Model Insights**: Read-only benchmark explorer displaying offline test-set metrics (`reports/model_comparison.csv`), 5-fold stratified cross-validation results (`reports/cross_validation_results.csv`), tuned hyperparameters, per-model JSON classification reports, and saved ROC & Precision-Recall curve artifacts.
+- **Adaptive Dark & Light Fintech Themes**: Seamless theme switching with institutional navy, slate, and teal styling.
+- **MongoDB Persistence & Audit Trail**: Real-time storage and retrieval of applicant metadata, 13 model features, predicted risk class, and class-1 probability.
 
 ---
 
-# 🏗️ Project Architecture
+## 🏗️ Project Architecture
 
-```
-                        Loan Dataset
-                             │
-                             ▼
-                     MongoDB Database
-                             │
-                             ▼
-                    Data Retrieval Module
-                             │
-                             ▼
-                     Data Preprocessing
-                             │
-                             ▼
-                    Feature Engineering
-                             │
-                             ▼
-                  Individual Model Training
-                             │
-                             ▼
-                  Hyperparameter Tuning
-                             │
-                             ▼
-                 Ensemble Learning (Stacking)
-                             │
-                             ▼
-                   Final Trained Model
-                             │
-                             ▼
-                  Streamlit Application
-                             │
-                             ▼
-                  Loan Approval Prediction
+```text
+                        Loan Dataset (MongoDB)
+                                  │
+                                  ▼
+                      Data Retrieval (FetchData)
+                                  │
+                                  ▼
+           Data Preprocessing (LabelEncoder + StandardScaler)
+                                  │
+                                  ▼
+               7 Base Classifiers + RandomizedSearchCV
+                                  │
+                                  ▼
+         Ensemble Learning (StackingClassifier + Meta-Learner)
+                                  │
+                                  ▼
+            Saved Model Artifacts (models/stacking_classifier.pkl)
+                                  │
+                                  ▼
+          Streamlit Fintech Platform (app.py + ui/* modules)
+                                  │
+                                  ▼
+        Real-Time Risk Assessment ◄──► MongoDB Prediction History
 ```
 
 ---
 
-# 📂 Project Structure
-
-```
 ## 📂 Project Structure
 
 ```text
-Loan-Risk-Assessment-System/
-│
-├── __pycache__/
-│   └── Test_file.cpython-314.pyc
+Loan-Risk-Assesment-System/
 │
 ├── .streamlit/
-│   └── config.toml
+│   └── config.toml                  # Streamlit server & base theme configuration
 │
 ├── database/
-│   ├── __pycache__/
-│   ├── db_collections.py
-│   ├── fetch_data.py
-│   ├── mongodb.py
-│   └── prediction_history.py
+│   ├── db_collections.py            # MongoDB collection name definitions
+│   ├── fetch_data.py                # Retrieves training dataset from MongoDB
+│   ├── mongodb.py                   # MongoDB connection manager using .env
+│   └── prediction_history.py        # CRUD operations for logged loan assessments
 │
-├── models/
+├── models/                          # Serialized encoders, scalers, base, tuned & stacking models
+│   ├── encoder.pkl
+│   ├── scaler.pkl
+│   ├── stacking_classifier.pkl
+│   └── *_tuned.pkl
 │
-├── reports/
+├── reports/                         # Offline evaluation CSVs, JSON reports & ROC/PR plots
+│   ├── cross_validation_results.csv
+│   ├── hyperparameter_results.csv
+│   ├── model_comparison.csv
+│   ├── *_classification_report.json
+│   ├── precision_recall_curve.png
+│   └── roc_curve.png
 │
-├── structure/
-│   ├── __pycache__/
+├── structure/                       # Core ML training, evaluation & inference modules
 │   ├── evaluation.py
 │   ├── feature_engineering.py
 │   ├── hyperparameter_tuning.py
@@ -124,414 +103,82 @@ Loan-Risk-Assessment-System/
 │   ├── stacking_classifier.py
 │   └── train_models.py
 │
-├── .gitattributes
-├── .gitignore
-├── app.py
-├── README.md
-├── requirements.txt
-├── Test_file.py
-└── test_search.py
-```
-```
-
----
-
-# 🗄️ MongoDB Integration
-
-MongoDB serves as the primary database of the project.
-
-The raw loan dataset is first imported into MongoDB. Instead of repeatedly loading CSV files during development, the application retrieves the data directly from the MongoDB collection, making the workflow more scalable and closer to real-world production systems.
-
-MongoDB stores:
-
-- Applicant Information
-- Loan Details
-- Financial Attributes
-- Historical Records
-- Prediction Inputs
-
-### Workflow
-
-```
-CSV Dataset
-      │
-      ▼
-MongoDB Collection
-      │
-      ▼
-Fetch Data using PyMongo
-      │
-      ▼
-Pandas DataFrame
-      │
-      ▼
-Machine Learning Pipeline
+├── ui/                              # Modular Fintech UI design system & page views
+│   ├── __init__.py
+│   ├── components.py                # Sidebar, headers, KPI cards, PII masking, chart themes
+│   ├── pages.py                     # Overview, Assessment, History, Analytics & Model Insights views
+│   ├── services.py                  # Cached model/report loaders & safe MongoDB wrappers
+│   └── styles.py                    # Dark/Light fintech CSS design system
+│
+├── app.py                           # Main Streamlit web application entry point
+├── requirements.txt                 # Python dependencies
+├── Test_file.py                     # CLI utility for running single predictions
+├── test_search.py                   # CLI utility for searching MongoDB records
+└── test_ui_regression.py            # Automated ML regression, CRUD & Streamlit UI test suite
 ```
 
 ---
 
-# ⚙️ Data Preprocessing
+## 🧠 Machine Learning Pipeline & Stacking Ensemble
 
-Machine Learning models require clean and properly formatted data to produce reliable predictions. Before training the models, several preprocessing steps are performed.
+### Input Features (13 Model Attributes)
+| Feature Name | Description | Type / Range |
+| :--- | :--- | :--- |
+| `credit.policy` | `1` if applicant meets underwriting credit criteria; `0` otherwise | Binary (`0` or `1`) |
+| `purpose` | Purpose of the loan (`debt_consolidation`, `credit_card`, `home_improvement`, `major_purchase`, `small_business`, `educational`, `all_other`) | Categorical (`LabelEncoder`) |
+| `int.rate` | Annual interest rate of the loan (decimal, e.g. `0.11` = `11%`) | Float (`0.0` – `1.0`) |
+| `installment` | Monthly installment owed by the borrower if funded | Float (`$`) |
+| `log.annual.inc` | Natural log of the self-reported annual income | Float |
+| `dti` | Debt-to-income ratio of the borrower | Float (`%`) |
+| `fico` | FICO credit score of the borrower | Integer (`300` – `850`) |
+| `days.with.cr.line` | Number of days borrower has had a credit line | Float |
+| `revol.bal` | Borrower's revolving credit balance | Float (`$`) |
+| `revol.util` | Revolving line utilization rate (`%` of available credit used) | Float (`%`) |
+| `inq.last.6mths` | Number of creditor inquiries in the last 6 months | Integer |
+| `delinq.2yrs` | Number of times 30+ days past due in the last 2 years | Integer |
+| `pub.rec` | Number of derogatory public records | Integer |
 
-The preprocessing pipeline includes:
-
-- Removing duplicate records
-- Handling missing values
-- Dropping unnecessary columns
-- Encoding categorical variables using Label Encoding
-- Feature Scaling using StandardScaler
-- Splitting the dataset into Training and Testing sets
-
-Proper preprocessing ensures that every model receives standardized numerical input, improving both training efficiency and prediction accuracy.
-
----
-
-# 🧠 Machine Learning Models
-
-Instead of relying on a single algorithm, this project trains multiple supervised learning models independently. Each model has different strengths and learns different characteristics of the dataset.
-
-The predictions from all these models are later combined through a Stacking Classifier.
-
----
-
-# 1️⃣ Logistic Regression
-
-Logistic Regression is a supervised classification algorithm used for binary prediction problems. It estimates the probability that a given applicant belongs to either the approved or rejected loan category using the sigmoid function.
-
-Despite being one of the simplest classification algorithms, Logistic Regression performs remarkably well on structured financial datasets where relationships between features are approximately linear.
-
-In this project, Logistic Regression acts as one of the **base learners**, providing probability-based predictions that contribute to the final ensemble model.
-
-### Advantages
-
-- Fast training
-- Computationally efficient
-- Produces probability scores
-- Easy to interpret
-- Strong baseline classifier
+### Level-1 Base Estimators & Level-2 Meta-Learner
+1. **Logistic Regression** (`logistic_regression_tuned.pkl`)
+2. **Support Vector Machine (SVM)** (`support_vector_machine_tuned.pkl`)
+3. **K-Nearest Neighbors (KNN)** (`k_nearest_neighbors_tuned.pkl`)
+4. **Decision Tree** (`decision_tree_tuned.pkl`)
+5. **Random Forest** (`random_forest_tuned.pkl`)
+6. **Gaussian Naive Bayes** (`naive_bayes_tuned.pkl`)
+7. **XGBoost** (`xgboost_tuned.pkl`)
+8. **Meta-Learner**: **Logistic Regression** combining 5-fold cross-validated `predict_proba` outputs (`models/stacking_classifier.pkl`).
 
 ---
 
-# 2️⃣ Support Vector Machine (SVM)
-
-Support Vector Machine is a powerful supervised learning algorithm designed to find the optimal decision boundary between different classes.
-
-Instead of simply separating the classes, SVM attempts to maximize the margin between them, resulting in improved generalization on unseen data.
-
-For loan prediction, SVM is capable of identifying complex relationships between applicant attributes that may not be captured by simpler linear models.
-
-### Advantages
-
-- Excellent classification accuracy
-- Handles high-dimensional data
-- Effective with nonlinear decision boundaries
-- Robust against overfitting
-
----
-
-# 3️⃣ Decision Tree
-
-Decision Trees classify data by recursively splitting the dataset according to the most informative feature.
-
-Each internal node represents a decision based on one feature, while each leaf node represents the final class prediction.
-
-Decision Trees are highly interpretable because every prediction follows a clear sequence of decision rules.
-
-In this project, they capture nonlinear relationships between financial variables that linear models may fail to identify.
-
-### Advantages
-
-- Easy to understand
-- No feature scaling required
-- Captures nonlinear patterns
-- Handles categorical features effectively
-
----
-
-# 4️⃣ Random Forest
-
-Random Forest is an ensemble learning algorithm based on multiple Decision Trees.
-
-Each tree is trained using:
-
-- Random subsets of training samples (Bagging)
-- Random subsets of features
-
-Instead of depending on one Decision Tree, Random Forest aggregates predictions from hundreds of trees through majority voting, reducing overfitting and improving prediction stability.
-
-### Advantages
-
-- High prediction accuracy
-- Robust against overfitting
-- Handles missing information well
-- Performs well on structured datasets
-
----
-
-# 5️⃣ K-Nearest Neighbors (KNN)
-
-KNN is an instance-based learning algorithm.
-
-Instead of learning explicit mathematical relationships, it predicts the class of a new applicant by examining the nearest training samples.
-
-The assumption is that applicants with similar financial characteristics are likely to have similar loan outcomes.
-
-### Advantages
-
-- Simple implementation
-- No training phase
-- Effective for smaller datasets
-- Captures local patterns
-
----
-
-# 6️⃣ Gaussian Naive Bayes
-
-Gaussian Naive Bayes is a probabilistic classifier based on Bayes' Theorem.
-
-It assumes that each feature contributes independently to the prediction and follows a Gaussian (normal) distribution.
-
-Although the independence assumption rarely holds perfectly in real-world financial data, Naive Bayes often provides surprisingly competitive results while being extremely fast.
-
-### Advantages
-
-- Extremely fast
-- Works well on small datasets
-- Handles probabilistic predictions efficiently
-- Requires minimal computational resources
-
----
-
-# 7️⃣ XGBoost
-
-XGBoost (Extreme Gradient Boosting) is one of the most powerful ensemble learning algorithms used in modern machine learning.
-
-Unlike Random Forest, which builds trees independently, XGBoost builds trees sequentially. Each new tree focuses on correcting the mistakes made by previous trees, gradually improving overall model performance.
-
-Due to its ability to capture complex nonlinear relationships, XGBoost is widely used in finance, banking, healthcare, and many Kaggle competitions.
-
-### Advantages
-
-- High predictive accuracy
-- Regularization reduces overfitting
-- Handles missing values
-- Fast and scalable
-- State-of-the-art performance on structured datasets
-
----
-
-# 🔍 Hyperparameter Tuning
-
-Training a model using default parameters rarely produces the best performance.
-
-Therefore, this project applies **GridSearchCV** to systematically search for the optimal combination of hyperparameters for each machine learning algorithm.
-
-Some of the tuned parameters include:
-
-- Number of Estimators
-- Maximum Depth
-- Learning Rate
-- Kernel Type
-- Regularization Parameter
-- Number of Neighbors
-
-Hyperparameter tuning significantly improves model accuracy and ensures better generalization on unseen loan applications.
-
----
-
-# 🤝 Ensemble Learning
-
-Every machine learning algorithm has its own strengths and weaknesses.
-
-Some models may perform exceptionally well on one type of applicant but poorly on another. Instead of selecting a single "best" model, Ensemble Learning combines the knowledge of multiple models to produce a stronger and more reliable prediction.
-
-The underlying principle of Ensemble Learning is that a collection of diverse models often outperforms any individual model.
-
-Benefits include:
-
-- Higher prediction accuracy
-- Better generalization
-- Lower variance
-- Reduced overfitting
-- Improved robustness
-
----
-
-# 🏆 Stacking Classifier
-
-The primary ensemble technique used in this project is **Stacking (Stacked Generalization)**.
-
-Unlike traditional ensemble methods such as Bagging or Boosting, Stacking combines multiple machine learning models by introducing another model known as the **Meta Learner**.
-
-The workflow consists of two levels:
-
-### Level 1 - Base Models
-
-The following algorithms are trained independently using the same training dataset:
-
-- Logistic Regression
-- Support Vector Machine
-- Decision Tree
-- Random Forest
-- K-Nearest Neighbors
-- Gaussian Naive Bayes
-- XGBoost
-
-Each of these models generates its own prediction for every applicant.
-
-```
-Training Dataset
-
-        │
-        ▼
-
- ┌──────────────┐
- │ Logistic Reg │
- └──────────────┘
-
- ┌──────────────┐
- │     SVM      │
- └──────────────┘
-
- ┌──────────────┐
- │Decision Tree │
- └──────────────┘
-
- ┌──────────────┐
- │Random Forest │
- └──────────────┘
-
- ┌──────────────┐
- │     KNN      │
- └──────────────┘
-
- ┌──────────────┐
- │ Naive Bayes  │
- └──────────────┘
-
- ┌──────────────┐
- │   XGBoost    │
- └──────────────┘
+## ⚙️ Setup, Configuration & Running the Application
+
+### 1. Environment Configuration
+Ensure a `.env` file exists in the project root (`Loan-Risk-Assesment-System/.env`) with your MongoDB connection settings:
+```env
+MONGO_URI=mongodb+srv://<username>:<password>@<cluster-url>/
+DATABASE_NAME=<your_database_name>
+COLLECTION_NAME=<your_training_collection_name>
 ```
 
-Instead of selecting one prediction, every model contributes its output.
-
----
-
-### Level 2 - Meta Learner
-
-The predictions generated by all the base models become the input features for another machine learning model called the **Meta Learner**.
-
-```
-Logistic Regression Prediction
-              │
-SVM Prediction
-              │
-Decision Tree Prediction
-              │
-Random Forest Prediction
-              │
-KNN Prediction
-              │
-Naive Bayes Prediction
-              │
-XGBoost Prediction
-              │
-              ▼
-      Meta Learner
-              │
-              ▼
- Final Loan Approval Prediction
+### 2. Install Dependencies
+```bash
+pip install -r requirements.txt
 ```
 
-The Meta Learner learns which base model performs best under different situations and intelligently combines their outputs to produce the final prediction.
+### 3. Run the Streamlit Web Application
+```bash
+cd Loan-Risk-Assesment-System
+streamlit run app.py
+```
 
-This two-level learning strategy generally achieves higher accuracy than relying on a single machine learning model.
-
----
-
-# 📊 Model Evaluation
-
-The trained models are evaluated using multiple classification metrics:
-
-- Accuracy
-- Precision
-- Recall
-- F1-Score
-- ROC-AUC Score
-- Confusion Matrix
-
-Comparing these metrics enables the selection of the most reliable ensemble model for deployment.
+### 4. Run Automated Regression & UI Tests
+```bash
+cd Loan-Risk-Assesment-System
+python test_ui_regression.py
+```
 
 ---
 
-# 🌐 Streamlit Web Application
+## 👨‍💻 Authors
 
-The trained stacking model is deployed using **Streamlit** through the `app.py` file.
-
-The web application provides a simple and interactive interface where users can enter applicant details and instantly receive a loan prediction.
-
-The application includes:
-
-- User-friendly input forms
-- Real-time prediction
-- Clean and responsive interface
-- Fast model inference
-- Easy deployment
-
----
-
-# 🎨 Frontend
-
-The frontend of the application is developed using:
-
-- Streamlit
-- Custom CSS 
-
-The CSS file enhances the overall appearance of the application by improving:
-
-- Layout
-- Typography
-- Buttons
-- Input Components
-- Cards
-- Colors
-- Responsiveness
-
-This provides users with a clean, modern, and intuitive interface for interacting with the prediction system.
-
----
-
-# 🛠️ Technologies Used
-
-| Category | Technologies |
-|----------|--------------|
-| Programming Language | Python |
-| Machine Learning | Scikit-Learn, XGBoost |
-| Database | MongoDB |
-| Data Processing | Pandas, NumPy |
-| Model Persistence | Joblib |
-| Frontend | Streamlit, CSS |
-| Visualization | Matplotlib, Seaborn |
-
----
-
-# 🚀 Future Enhancements
-
-- Explainable AI using SHAP and LIME
-- Cloud Deployment (AWS/Azure/GCP)
-- REST API Integration
-- Docker Containerization
-- Continuous Model Retraining
-- User Authentication
-- Loan Analytics Dashboard
-- Automated Data Validation
-
----
-
-# 👨‍💻 Conclusion
-
-The **Loan Risk Assessment System** demonstrates the complete lifecycle of a real-world Machine Learning project, from data storage and preprocessing to model development, evaluation, ensemble learning, and deployment.
-
-By combining multiple classification algorithms through a **Stacking Classifier**, the system leverages the strengths of each individual model to achieve more accurate and robust loan approval predictions. The integration of **MongoDB** ensures efficient data management, while the **Streamlit** application with custom **CSS** provides a clean and interactive user experience, making the solution both technically comprehensive and practically applicable.
+Founded & Developed by **Sagnik Ghosh & Anantika Ghosh** · Version 1.0.0
